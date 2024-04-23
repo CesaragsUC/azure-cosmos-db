@@ -1,0 +1,66 @@
+﻿@page "/"
+@inject IProdutoService _service
+@inject NavigationManager NavManager
+
+<PageTitle>Index</PageTitle>
+
+@if(produtos is null)
+{
+    <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"aria-valuenow="40" aria-valuemax="100" style="width:100%"></div>
+    </div>
+}
+else
+{
+    <a href=@("/add") class="btn btn-primary" role="button">
+        <i class="fas fa-user-plus"></i>
+        Add Produto
+    </a>
+    <div class="table-responsive">
+
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Quantidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var produto in produtos)
+                {
+                    <tr>
+                        <td>@produto.id</td>
+                        <td>@produto.Nome</td>
+                        <td>@produto.Preco</td>
+                        <td>@produto.Quantidade</td>
+                        <td>
+                            <a href=@($"Edit/{produto.id}") class="btn btn-primary"><span class="oi oi-pencil"></span></a>
+                            <button class="btn btn-danger" @onclick="async () => await DeleteProduto(produto.id)"><span class="oi oi-trash"></span></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+   
+}
+
+@code{
+
+    List<Produto> produtos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        produtos = await _service.GetProdutosAsync();
+    }
+
+    private async Task DeleteProduto(Guid? id)
+    {
+        await _service.DeleteProdutoAsync(id.ToString());
+        NavManager.NavigateTo("/");
+    }
+
+
+}

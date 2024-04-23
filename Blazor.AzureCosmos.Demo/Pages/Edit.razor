@@ -1,0 +1,76 @@
+﻿@page "/edit"
+@page "/edit/{id}"
+@inject IProdutoService _service
+@inject NavigationManager NavManager
+
+<PageTitle>Edit</PageTitle>
+
+<EditForm Model="@produto">
+
+    <div class="form-group row p-2">
+        <div class="col-md-6">
+            <label for="Nome">Nome</label>
+            <InputText id="Nome" class="form-control" @bind-Value="produto.Nome" />
+        </div>
+
+    </div>
+
+    <div class="form-group row p-2">
+
+        <div class="col-md-6">
+            <label for="Preco">Preço</label>
+            <InputNumber id="Preco" class="form-control" @bind-Value="produto.Preco" />
+        </div>
+
+    </div>
+
+    <div class="form-group row p-2">
+        <div class="col-md-6">
+            <label for="Preco">Quantidade</label>
+            <InputNumber id="Preco" class="form-control" @bind-Value="produto.Quantidade" />
+        </div>
+
+    </div>
+    <div class="form-group row p-2">
+        <div class="col-md-6">
+            <button class="btn btn-primary" @onclick="@(async () => UpdateProduto())">Salvar</button>
+            <button class="btn btn-light" @onclick="Cancel">Cancelar</button>
+       
+        </div>
+
+    </div>
+
+
+</EditForm>
+
+
+
+@code {
+
+    Produto produto = new();
+
+    [Parameter]
+    public string? id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(id))
+        {
+            produto = await _service.GetProdutoAsync(id);
+        }
+
+    }
+
+
+    private async Task UpdateProduto()
+    {
+        await _service.UpdateProdutoAsync(produto);
+        NavManager.NavigateTo("/");
+    }
+
+    public void Cancel()
+    {
+        NavManager.NavigateTo("/");
+    }
+
+}
